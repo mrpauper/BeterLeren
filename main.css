@@ -1,0 +1,65 @@
+.frame{
+border: solid gray 1px;
+width: 20%;
+border-radius: 5px;
+margin: 100px auto;
+background-color: bisque;
+}
+#button {
+margin-left: 90px;
+}
+#header {
+font-size: 60px;
+}
+#subtitle {
+  margin-left: 20%;
+}
+.options {
+  width: 19vw;
+  font-size: 125%;
+  margin-left: 10px;
+}
+.oefening {
+  background: #F5F5DC;
+  margin-left: 10%;
+  margin-right: 10%;
+  padding: 10px;
+  border-radius: 10px;
+}
+.input {
+  text-align: center;
+}
+#input {
+  width: 80%;
+  height: 30px;
+  font-size: 30px;
+  text-align: center;
+}
+#button2{
+  margin-left: 10%;
+  width: 100px;
+  height: 25px;
+}
+#wis {
+  width: 100px;
+  height: 25px;
+  margin-left: 10px;
+}
+#woord, #woord2, #cijfer {
+  font-size: 40px;
+}
+#cijfer {
+  background-color: #ffffff;
+}
+.buttons {
+  width: 80px;
+  height: 30px;
+  font-size: 20px;
+}
+.buttons2{
+  text-align: center;
+}
+.inputs1 {
+text-align: center;
+margin-top: 10px;
+}

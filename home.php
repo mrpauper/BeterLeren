@@ -11,7 +11,7 @@ include("session.php");
     <title>WRTS-2 | home</title>
     </head>
     <body>
-<h1 align = 'center'><img src = "beterleren.png" style = ""/></h1>
+<h1 align = 'center'><img src = "images/beterleren.png" style = ""/></h1>
 
 <div style = "display: -webkit-box;display: -moz-box;display: -ms-flexbox;display: -webkit-flex;display: flex;justify-content: center;">
 
@@ -37,8 +37,8 @@ $result = $con->query($sql);
 while($row = $result->fetch_assoc()) {
 echo("<li style = 'text-align: left; padding-left: 15px; display: block'>");
 echo("<input type = 'checkbox' value = '" . $row['NAME'] . "' id = 'checkbox' style = 'margin: 5px; display: inline;'/>");
-echo("<a href = 'delete?add=" . $row['NAME'] . "' onclick='return confirm(&quot;Weet je zeker dat je " . $row['NAME'] . " wilt verwijderen?&quot;);'><img class = 'icons' src = 'delete-icon.png' alt = 'verwijderen' style = 'height: 100%; margin 0;' id =  'verwijderen'/></a>");
-echo("<a href = 'edit?add=" . $row['NAME'] . "'> <img class = 'icons' src = 'edit-icon.png' alt = 'bewerken' style = 'height: 100%; margin-right: 10px;'/></a>");
+echo("<a href = 'delete?add=" . $row['NAME'] . "' onclick='return confirm(&quot;Weet je zeker dat je " . $row['NAME'] . " wilt verwijderen?&quot;);'><img class = 'icons' src = 'images/delete-icon.png' alt = 'verwijderen' style = 'height: 100%; margin 0;' id =  'verwijderen'/></a>");
+echo("<a href = 'edit?add=" . $row['NAME'] . "'> <img class = 'icons' src = 'images/edit-icon.png' alt = 'bewerken' style = 'height: 100%; margin-right: 10px;'/></a>");
 echo("<span style = 'cursor: pointer;' onclick = 'window.location.href = &quot;methods?add=" . $row['NAME'] . "&quot;'>".$row['NAME']."<span>");
 echo("</li>");
 }

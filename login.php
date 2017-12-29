@@ -10,9 +10,11 @@ $stmt->execute();
 $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     while($row = $result->fetch_assoc()) {
+        $email = $row["EMAIL"];
         $hashed_password = $row["PASSWORD"];
     }
 if(password_verify($password, $hashed_password)) {
+    $_SESSION['email_user'] = $email;
     $_SESSION['login_user'] = $username;
     header("Location: home");
 } 

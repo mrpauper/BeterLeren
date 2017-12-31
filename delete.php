@@ -5,7 +5,7 @@ include("config2.php");
 $sql = "DELETE FROM words WHERE NAME = '$listname'";
 $result = $con->query($sql);
 if ($result) {
-header("Location: home");
+header("Location: home.php");
 }
 else {
 $error = "Kan woordenlijst niet verwijderen.";

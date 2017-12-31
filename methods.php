@@ -19,7 +19,7 @@ $con->close();
 <body>
 <h1 align = 'center'>methoden</h1>
 <form style = 'font-size: 140%;
-  margin-left: 20%;' action = "/main" method = "GET">
+  margin-left: 20%;' action = "main.php" method = "GET">
 <input type = 'radio' value = 'RIGHT' name = 'order' checked>
 <?php  echo $lang1 . " naar ". $lang2; ?>
 <br>
@@ -33,6 +33,6 @@ $con->close();
 <input type = 'submit' value = 'submit'>
 <input type = 'input' value = '<?php echo $listname; ?>' style = 'display: none' name = 'add'/>
 </form>
-<a href = "home">terug naar home</a>
+<a href = "home.php">terug naar home</a>
 </body>
 </html>

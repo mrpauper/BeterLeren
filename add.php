@@ -62,6 +62,6 @@ $con->close();
 ?>
 <p><?php echo $error?></p>
 <br>
-<a href = "home">terug naar home</a>
+<a href = "home.php">terug naar home</a>
 </body>
 </html>

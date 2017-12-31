@@ -93,6 +93,6 @@ tr:nth-child(even) {
     background-color: #dddddd;
 }
 </style>
-<a href = "home">terug naar home</a>
+<a href = "home.php">terug naar home</a>
 </body>
 </html>

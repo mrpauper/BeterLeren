@@ -16,7 +16,7 @@ if ($result->num_rows > 0) {
 if(password_verify($password, $hashed_password)) {
     $_SESSION['email_user'] = $email;
     $_SESSION['login_user'] = $username;
-    header("Location: home");
+    header("Location: home.php");
 } 
 else {
     die("wrong password or username");

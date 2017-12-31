@@ -22,6 +22,6 @@ while($row = $result->fetch_assoc()) {
     <input type = "input" placeholder = "nieuwe wachtwoord"/>
     <input type = "input" placeholder = "herhaling nieuwe wachtwoord"/>
 </form>
-<a href = "home">terug naar home</a>
+<a href = "home.php">terug naar home</a>
 </body>
 </html>

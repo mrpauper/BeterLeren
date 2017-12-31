@@ -14,7 +14,7 @@ $listarray = json_decode($listname);
 <body>
 <h1 align = 'center'>methoden</h1>
 <form style = 'font-size: 140%;
-  margin-left: 20%;' action = "/main" method = "GET">
+  margin-left: 20%;' action = "main.php" method = "GET">
     <?php 
     $count = 1;
         foreach ($listarray as $list) {

@@ -102,7 +102,7 @@ autocapitalize='none' autocomplete='off'>
 </div>
 <input type="button" onclick="myFunction()" value="begin opnieuw">
 <br>
-<a href="home">terug naar home</a>
+<a href="home.php">terug naar home</a>
 <script>
 function myFunction(){
 location.reload();

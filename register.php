@@ -1,10 +1,10 @@
 <?php
-include(config.php);
-
-$password = password_hash("bert", PASSWORD_DEFAULT);
-$email = "bert@gmail.com";
-$username = "bert";
-$stmt = $con->prepare("INSERT INTO login (EMAIL, USERNAME, PASSWORD) VALUES (?, ?, ?)") or die("misstake in query");
-$stmt->bind_param('sss', $email, $username, $password);
+include("config.php");
+$stmt = $con->prepare("INSERT INTO login (USERNAME, PASSWORD, EMAIL) VALUES (?, ?, ?)");
+$stmt->bind_param("sss", $username, $password, $email);
+$password = password_hash($_POST["password"], PASSWORD_DEFAULT, ["cost"=>11]);
+$email = $_POST["email"];
+$username = $_POST["username"];
 $stmt->execute();
+echo "Het registreren is gelukt. klik <a href = '/'>hier</a> om in te loggen.";
 ?>

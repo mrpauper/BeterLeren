@@ -37,9 +37,9 @@ $result = $con->query($sql);
 while($row = $result->fetch_assoc()) {
 echo("<li style = 'text-align: left; padding-left: 15px; display: block'>");
 echo("<input type = 'checkbox' value = '" . $row['NAME'] . "' id = 'checkbox' style = 'margin: 5px; display: inline;'/>");
-echo("<a href = 'delete.php?add=" . $row['NAME'] . "' onclick='return confirm(&quot;Weet je zeker dat je " . $row['NAME'] . " wilt verwijderen?&quot;);'><img class = 'icons' src = 'images/delete-icon.png' alt = 'verwijderen' style = 'height: 100%; margin 0;' id =  'verwijderen'/></a>");
-echo("<a href = 'edit.php?add=" . $row['NAME'] . "'> <img class = 'icons' src = 'images/edit-icon.png' alt = 'bewerken' style = 'height: 100%; margin-right: 10px;'/></a>");
-echo("<span style = 'cursor: pointer;' onclick = 'window.location.href = &quot;methods.php?add=" . $row['NAME'] . "&quot;'>".$row['NAME']."<span>");
+echo("<a href = 'delete.php?add=" . $row['id'] . "' onclick='return confirm(&quot;Weet je zeker dat je " . $row['NAME'] . " wilt verwijderen?&quot;);'><img class = 'icons' src = 'images/delete-icon.png' alt = 'verwijderen' style = 'height: 100%; margin 0;' id =  'verwijderen'/></a>");
+echo("<a href = 'edit.php?add=" . $row['id'] . "'> <img class = 'icons' src = 'images/edit-icon.png' alt = 'bewerken' style = 'height: 100%; margin-right: 10px;'/></a>");
+echo("<span style = 'cursor: pointer;' onclick = 'window.location.href = &quot;methods.php?add=" . $row['id'] . "&quot;'>".$row['NAME']."<span>");
 echo("</li>");
 }
 ?>

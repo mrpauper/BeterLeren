@@ -1,17 +1,18 @@
 <?php
 include("session.php");
-$listname = $_GET["add"];
+$list_id = $_GET["add"];
 include("config2.php");
-$sql = "SELECT * FROM words WHERE NAME = '$listname'";
+$sql = "SELECT * FROM words WHERE id = '$list_id'";
 $result = $con->query($sql);
 while($row = $result->fetch_assoc()) {
 $lang1 = $row["LANG1"];
 $lang2 = $row["LANG2"];
+$listname = $row["NAME"];
 }
 ?>
 <script>
     var array = [];
-    </script>
+</script>
 
 <!DOCTYPE html>
 <html>
@@ -35,7 +36,7 @@ $lang2 = $row["LANG2"];
         <th style = "color: blue"><?php echo $lang2; ?></th>
     </tr>
 <?php 
-$sql = "SELECT WORDS from words where NAME = '$listname'";
+$sql = "SELECT WORDS from words where id = '$list_id'";
 $result = $con->query($sql);
 $boolean = true;
 while($row = $result->fetch_assoc()) {
@@ -64,15 +65,15 @@ document.getElementById("table-body").innerHTML += "<tr><th>" + nederlands + "</
 }
 
 function save () {
-var listname = <?php echo json_encode($listname) ?>;
+var list_id = <?php echo json_encode($list_id) ?>;
 var array2 = JSON.stringify(array);
 var xhttp = new XMLHttpRequest();
 xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-       alert("lijst is opgeslagen");
+       alert(xhttp.responseText);
     }
 };
-xhttp.open("GET", "edit2.php?add=" + array2 + "&add1=" + listname, true);
+xhttp.open("GET", "edit2.php?add=" + array2 + "&add1=" + list_id, true);
 xhttp.send();
 }
 </script>

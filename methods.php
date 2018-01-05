@@ -1,12 +1,13 @@
 <?php
 include("session.php");
-$listname = $_GET['add'];
+$list_id = $_GET['add'];
 include("config2.php");
-$sql = "SELECT * FROM words WHERE NAME = '$listname'";
+$sql = "SELECT * FROM words WHERE id = '$list_id'";
 $result = $con->query($sql);
 while($row = $result->fetch_assoc()){
     $lang1 = $row['LANG1'];
     $lang2 = $row['LANG2'];
+    $listname = $row['NAME'];
 }
 $con->close();
 ?>
@@ -19,7 +20,7 @@ $con->close();
 <body>
 <h1 align = 'center'>methoden</h1>
 <form style = 'font-size: 140%;
-  margin-left: 20%;' action = "main.php" method = "GET">
+  margin-left: 20%;' action = "main.php" method = "POST">
 <input type = 'radio' value = 'RIGHT' name = 'order' checked>
 <?php  echo $lang1 . " naar ". $lang2; ?>
 <br>

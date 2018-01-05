@@ -1,10 +1,10 @@
 <?php
 include("session.php");
-$listname = $_GET['add'];
-$method = $_GET['method'];
+$listname = $_POST['add'];
+$method = $_POST['method'];
 include("config2.php");
 
-$listarray = json_decode($_GET["add"]);
+$listarray = json_decode($_POST["add"]);
 if ($listarray !== null) {
 $nederlands = array();
 $engels = array();
@@ -14,7 +14,7 @@ $count = 1;
 
 
 foreach ($listarray as $list) {
-$sql = "SELECT WORDS FROM words WHERE NAME = '$list'";
+$sql = "SELECT WORDS FROM words WHERE NAME = '$list' AND USER = '".$_SESSION["login_user"]."'";
 $result = $con->query($sql);
 while($row = $result->fetch_assoc()) {
     $array = unserialize($row["WORDS"]);
@@ -45,7 +45,7 @@ else {
 $order = $_GET['order'];
 $nederlands = array();
 $engels = array();
-$sql = "SELECT WORDS FROM words WHERE NAME = '$listname'"; 
+$sql = "SELECT WORDS FROM words WHERE NAME = '$listname' AND USER = '".$_SESSION["login_user"]."'"; 
 $result = $con->query($sql); 
 while($row = $result->fetch_assoc()){
 $array = unserialize($row['WORDS']);
@@ -62,7 +62,7 @@ foreach ($array as $key => $value) {
 }
 $count = count($nederlands, COUNT_RECURSIVE) / 2;
 if (count($nederlands) == 0) {
-    echo "<script>alert('Er zijn geen woorden in deze woordenlijst(en)'); window.location.href = 'home'</script>";
+    echo "<script>alert('Er zijn geen woorden in deze woordenlijst(en)'); window.location.href = 'home.php'</script>";
 }
 ?>
 <!DOCTYPE html>
@@ -75,7 +75,7 @@ if (count($nederlands) == 0) {
 </head>
 <body onload = "start()">
 <div class = 'oefening'>
-  <h1 align = 'center'><?php $listarray = json_decode($_GET["add"]); if ($listarray !== null) { foreach($listarray as $value){echo $value; echo "  ";}} else { echo $listname; }?></h1>
+  <h1 align = 'center'><?php $listarray = json_decode($_POST["add"]); if ($listarray !== null) { foreach($listarray as $value){echo $value; echo "  ";}} else { echo $listname; }?></h1>
 
     <h2 align = 'center' id="woord"></h2>
 
@@ -92,6 +92,13 @@ autocapitalize='none' autocomplete='off'>
 
       <h2 align = 'center' id="woord2"></h2>
 <p>voortgang: </p>
+  <div style = "background-color: white;
+  border-radius: 13px; /* (height of inner div) / 2 + padding */
+  padding: 3px;">
+    <div style = "background-color: green;
+   height: 20px;
+   border-radius: 10px; width: 0%;" id = "progressbar"></div>
+  </div>
   <ul>
     <li id = 'goed'></li>
     <li id = 'fout'></li>
@@ -115,6 +122,7 @@ var engels = <?php echo json_encode( $engels) ?>;
 var clicks = 0; 
 var fouten = 0;
 var goeden = 0;
+var progression = 0;
 var order = "<?php echo $order; ?>";
 var method = "<?php echo $method; ?>";
   
@@ -208,9 +216,12 @@ clicks++;
 
 else {
 }
+progression++;
 document.getElementById("goed").innerHTML = "aantal goed: " + goeden;
-    document.getElementById("fout").innerHTML = "aantal fouten: " + fouten;
+document.getElementById("fout").innerHTML = "aantal fouten: " + fouten;
 document.getElementById("resterend").innerHTML = nederlands2 - clicks + 1;
+var betweenvar = progression / nederlands2 * 100;
+document.getElementById("progressbar").style.width = betweenvar + "%";
  
 
 }

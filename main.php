@@ -21,7 +21,7 @@ while($row = $result->fetch_assoc()) {
 }
 $betweenvar = "order" . $count . "";
 $count++;
-$order2 = $_GET[$betweenvar];
+$order2 = $_POST[$betweenvar];
 foreach ($array as $key => $value) {
     if ($order2 == "RIGHT") {
     $nederlands2[]['NEDERLANDS'] = $array[$key]['NEDERLANDS'];
@@ -174,6 +174,7 @@ if (clicks > 0 && clicks < nederlands2) {
             nederlands.push({NEDERLANDS: nederlands[clicks - 1].NEDERLANDS});
             engels.splice(clicks + 2,0,{ENGELS: engels[clicks - 1].ENGELS});
             nederlands.splice(clicks + 2,0,{NEDERLANDS: nederlands[clicks - 1].NEDERLANDS});
+      fouten++;
       } else {
       engels.splice(clicks + 2,0,{ENGELS: engels[clicks - 1].ENGELS});
       nederlands.splice(clicks + 2,0,{NEDERLANDS: nederlands[clicks - 1].NEDERLANDS});

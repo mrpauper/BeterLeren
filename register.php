@@ -2,7 +2,8 @@
 include("config.php");
 $stmt = $con->prepare("INSERT INTO login (USERNAME, PASSWORD, EMAIL) VALUES (?, ?, ?)");
 $stmt->bind_param("sss", $username, $password, $email);
-$password = password_hash($_POST["password"], PASSWORD_DEFAULT, ["cost"=>11]);
+$password = $_POST["password"];
+$password = password_hash($password, PASSWORD_DEFAULT, ["cost"=>11]);
 $email = $_POST["email"];
 $username = $_POST["username"];
 $stmt->execute();

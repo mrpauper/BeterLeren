@@ -79,6 +79,8 @@ if (count($nederlands) == 0) {
 
     <h2 align = 'center' id="woord"></h2>
 
+
+<div id = "toetsen">
   <form id = 'form'>
 <div class = 'input'>
   <input id='input' name='input' placeholder='vertaling' type='text'
@@ -91,6 +93,25 @@ autocapitalize='none' autocomplete='off'>
     </form>
 
       <h2 align = 'center' id="woord2"></h2>
+</div>
+
+
+<div id = "gedachten" style = "display: none;">
+    <form id = 'form'>
+<div style = "text-align: center;">
+            <a href = "javascript:void(0);" style = "color: blue;" onclick = "show();">Laat antwoord zien</a>
+</div>
+<h2 align = 'center' id="woord22"></h2>
+<div id = "goedfout" style = "display: none">
+<div style = "display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; justify-content: center;">
+<div style = "width: 49%; background-color: green; color: white; width: 100%; display: block; text-align: center; cursor: pointer;" onclick = "goed();"><span style = "font-size: 2vw;">Goed</span></div>
+<div style = "width: 49%; background-color: red; color: white; width: 100%; display: block; text-align: center; cursor: pointer;" onclick = "fout();"><span style = "font-size: 2vw;">Fout</span></div>
+</div>
+</div>
+    </form>
+</div>
+
+
 <p>voortgang: </p>
   <div style = "background-color: white;
   border-radius: 13px; /* (height of inner div) / 2 + padding */
@@ -126,7 +147,7 @@ var progression = 0;
 var order = "<?php echo $order; ?>";
 var method = "<?php echo $method; ?>";
   
-//Normal method 
+//Normale methode
   if (method == "TOETSEN") {
       function start() {
           var m = nederlands.length, t, i;
@@ -224,7 +245,100 @@ document.getElementById("resterend").innerHTML = nederlands2 - clicks + 1;
 var betweenvar = progression / nederlands2 * 100;
 document.getElementById("progressbar").style.width = betweenvar + "%";
  
+}
+} 
 
+//methode gedachten
+else {
+function start() {
+          var m = nederlands.length, t, i;
+                while (m) {
+                    i = Math.floor(Math.random() * m--);
+                    t = nederlands[m].NEDERLANDS;
+                    nederlands[m].NEDERLANDS = nederlands[i].NEDERLANDS;
+                    nederlands[i].NEDERLANDS = t;
+                     t = engels[m].ENGELS;
+                     engels[m].ENGELS = engels[i].ENGELS;
+                     engels[i].ENGELS = t;
+        }
+            document.getElementById("woord").innerHTML= nederlands[clicks].NEDERLANDS;
+      }
+document.getElementById("toetsen").style.display = "none";
+document.getElementById("gedachten").style.display = "inline";
+
+function show() {
+document.getElementById("woord22").innerHTML = engels[clicks].ENGELS;
+document.getElementById("goedfout").style.display = "inline";
+}
+
+function goed() {
+  var nederlands2 = 0
+for (x in nederlands) {
+    nederlands2++;
+}
+  var engels2 = 0
+for (x in engels) {
+    engels2++;
+}
+clicks++;
+goeden++;
+if (clicks > 0 && clicks < nederlands2) {
+document.getElementById("goedfout").style.display = "none";
+document.getElementById("woord22").innerHTML = "";
+document.getElementById("woord").innerHTML = nederlands[clicks].NEDERLANDS;
+}
+else if (clicks == nederlands2) {
+document.getElementById("goedfout").style.display = "none";
+document.getElementById("woord22").innerHTML = "klaar";
+document.getElementById("woord").innerHTML = "klaar";
+}
+progression++;
+document.getElementById("goed").innerHTML = "aantal goed: " + goeden;
+document.getElementById("fout").innerHTML = "aantal fouten: " + fouten;
+document.getElementById("resterend").innerHTML = nederlands2 - clicks + 1;
+var betweenvar = progression / nederlands2 * 100;
+document.getElementById("progressbar").style.width = betweenvar + "%";
+}
+
+function fout() {
+  var nederlands2 = 0
+for (x in nederlands) {
+    nederlands2++;
+}
+  var engels2 = 0
+for (x in engels) {
+    engels2++;
+}
+clicks++;
+fouten++;
+
+if (clicks > 0 && clicks < nederlands2) {
+if (mistakes.indexOf(engels[clicks - 1].ENGELS) == -1) {
+            mistakes.push(engels[clicks - 1].ENGELS);
+            engels.push({ENGELS: engels[clicks - 1].ENGELS});
+            nederlands.push({NEDERLANDS: nederlands[clicks - 1].NEDERLANDS});
+            engels.splice(clicks + 2,0,{ENGELS: engels[clicks - 1].ENGELS});
+            nederlands.splice(clicks + 2,0,{NEDERLANDS: nederlands[clicks - 1].NEDERLANDS});
+      } else {
+      engels.splice(clicks + 2,0,{ENGELS: engels[clicks - 1].ENGELS});
+      nederlands.splice(clicks + 2,0,{NEDERLANDS: nederlands[clicks - 1].NEDERLANDS});
+      }
+}
+else if (clicks == nederlands2) {
+document.getElementById("goedfout").style.display = "none";
+document.getElementById("woord22").innerHTML = "klaar";
+document.getElementById("woord").innerHTML = "klaar";
+}
+
+document.getElementById("goedfout").style.display = "none";
+document.getElementById("woord22").innerHTML = "";
+document.getElementById("woord").innerHTML = nederlands[clicks].NEDERLANDS;
+progression++;
+document.getElementById("goed").innerHTML = "aantal goed: " + goeden;
+document.getElementById("fout").innerHTML = "aantal fouten: " + fouten;
+document.getElementById("resterend").innerHTML = nederlands2 - clicks;
+var betweenvar = progression / nederlands2 * 100;
+document.getElementById("progressbar").style.width = betweenvar + "%";
 }
 }
   </script>

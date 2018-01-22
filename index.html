@@ -59,30 +59,31 @@
 				<div class="login-group">
 					<div class="form-group">
 						<label for="reg_username" class="sr-only">Gebruikersnaam</label>
-						<input type="text" class="form-control" id="username" name="username" placeholder="Gebruikersnaam">
+						<input type="text" class="form-control" id="reg_username" name="username" placeholder="Gebruikersnaam">
 					</div>
 					<div class="form-group">
 						<label for="reg_password" class="sr-only">Wachtwoord</label>
-						<input type="password" class="form-control" id="password" name="password" placeholder="Wachtwoord">
+						<input type="password" class="form-control" id="reg_password" name="password" placeholder="Wachtwoord" onchange = "checkpass(); return false;">
 					</div>
 					<div class="form-group">
-						<label for="reg_password_confirm" class="sr-only">Bevestig wachtwoord</label>
-						<input type="password" class="form-control" id="password_confirm" name="password_confirm" placeholder="Bevestiging wachtwoord">
+						<label for="reg_password_confirm" class="sr-only" >Bevestig wachtwoord</label>
+						<input type="password" class="form-control" id="reg_password_confirm" name="password_confirm" placeholder="Bevestiging wachtwoord" onchange = "checkpass(); return false;">
 					</div>
 					
 					<div class="form-group">
 						<label for="reg_email" class="sr-only">Email adres</label>
-						<input type="text" class="form-control" id="email" name="email" placeholder="Email adres">
+						<input type="text" class="form-control" id="reg_email" name="email" placeholder="Email adres">
 					</div>
 					<div class="form-group">
 						<label for="reg_fullname" class="sr-only">Volledige naam</label>
-						<input type="text" class="form-control" id="fullname" name="fullname" placeholder="Volledige naam">
+						<input type="text" class="form-control" id="reg_fullname" name="fullname" placeholder="Volledige naam">
 					</div>
 
 				</div>
 				<button type="submit" class="login-button"><i class="fa fa-chevron-right"></i></button>
 			</div>
 			<div class="etc-login-form">
+				<p id = "passerror" style = "color: red;"> </p>
 				<p>Heb je al een account? <a href = "javascript: void(0)" onclick = "document.getElementById('login-box').style.display = 'inline'; document.getElementById('register-box').style.display = 'none';">Log hier in</a></p>
 			</div>
 		</form>
@@ -516,6 +517,16 @@ label:hover:before {
   }
 	
 })(jQuery);
+</script>
+<script>
+function checkpass() {
+if (document.getElementById("reg_password_confirm").value != document.getElementById("reg_password").value) {
+document.getElementById("passerror").innerHTML = "De wachtwoorden zijn niet hetzelfde.";
+}
+else {
+document.getElementById("passerror").innerHTML = "";
+}
+}
 </script>
 </body>
 

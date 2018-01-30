@@ -42,7 +42,7 @@ $order = "RIGHT";
 
 
 else {
-$order = $_GET['order'];
+$order = $_POST['order'];
 $nederlands = array();
 $engels = array();
 $sql = "SELECT WORDS FROM words WHERE NAME = '$listname' AND USER = '".$_SESSION["login_user"]."'"; 
@@ -295,7 +295,7 @@ document.getElementById("woord").innerHTML = "klaar";
 progression++;
 document.getElementById("goed").innerHTML = "aantal goed: " + goeden;
 document.getElementById("fout").innerHTML = "aantal fouten: " + fouten;
-document.getElementById("resterend").innerHTML = nederlands2 - clicks + 1;
+document.getElementById("resterend").innerHTML = nederlands2 - clicks;
 var betweenvar = progression / nederlands2 * 100;
 document.getElementById("progressbar").style.width = betweenvar + "%";
 }
@@ -325,9 +325,17 @@ if (mistakes.indexOf(engels[clicks - 1].ENGELS) == -1) {
       }
 }
 else if (clicks == nederlands2) {
-document.getElementById("goedfout").style.display = "none";
 document.getElementById("woord22").innerHTML = "klaar";
 document.getElementById("woord").innerHTML = "klaar";
+}
+
+var nederlands2 = 0
+for (x in nederlands) {
+    nederlands2++;
+}
+var engels2 = 0
+for (x in engels) {
+    engels2++;
 }
 
 document.getElementById("goedfout").style.display = "none";

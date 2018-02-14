@@ -7,6 +7,12 @@ $result = $con->query($sql);
    $row = mysqli_fetch_array($result,MYSQLI_ASSOC);
    $login_session = $row['USERNAME'];
    if(!isset($_SESSION['login_user'])){
-      header("location:index.html");
+      header("location:index.php");
    }
+function sanitize($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
 ?>

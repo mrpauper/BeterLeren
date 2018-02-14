@@ -1,6 +1,52 @@
-<!DOCTYPE html>
-<html>
+<?php 
+$error = $user_error = $pass_error = "";
 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+session_start();
+include("config.php");
+function sanitize($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+$username = sanitize($_POST['username']);
+$password = sanitize($_POST['password']);
+
+$stmt = $con->prepare('SELECT * FROM login WHERE USERNAME = ?');
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        $email = $row["EMAIL"];
+        $hashed_password = $row["PASSWORD"];
+        $confirmed = $row["CONFIRMED"];
+    }
+    if ($confirmed == 0) {
+            $error = "Je account is nog niet geactiveerd.";
+    }
+    else {
+    if(password_verify($password, $hashed_password)) {
+        $_SESSION['email_user'] = $email;
+        $_SESSION['login_user'] = $username;
+        header("Location: home.php");
+    } 
+    else {
+        $pass_error = "Het wachtwoord is onjuist.";
+    }
+    }
+}
+else {
+$user_error = "De gebruikersnaam bestaat niet.";
+}
+$con->close();
+}
+
+?>
+
+
+<html>
 <head>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
@@ -21,17 +67,19 @@
 	<div class="logo"><img src = "images/beterleren.png" style = "display: block; margin-left: auto; margin-right: auto"/></div>
 	<!-- Main Form -->
 	<div class="login-form-1" >
-		<form id="login-form" class="text-left" method = "post" action = "login.php">
+		<form id="login-form" class="text-left" method = "post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
 			<div class="login-form-main-message"></div>
 			<div class="main-login-form">
 				<div class="login-group">
 					<div class="form-group">
 						<label for="lg_username" class="sr-only">Gebruikersnaam</label>
-						<input type="text" class="form-control" id="username" name="username" placeholder="Gebruikersnaam">
+						<input type="text" class="form-control" id="username" name="username" placeholder="Gebruikersnaam"><br>
+<span style = "color: red"><?php echo $user_error;?></span>
 					</div>
 					<div class="form-group">
 						<label for="lg_password" class="sr-only">Wachtwoord</label>
-						<input type="password" class="form-control" id="password" name="password" placeholder="Wachtwoord">
+						<input type="password" class="form-control" id="password" name="password" placeholder="Wachtwoord"><br>
+<span style = "color: red"><?php echo $pass_error;?></span>
 					</div>
 					<div class="form-group login-group-checkbox">
 						<input type="checkbox" id="lg_remember" name="lg_remember">
@@ -39,58 +87,16 @@
 					</div>
 				</div>
 				<button type="submit" class="login-button"><i class="fa fa-chevron-right"></i></button>
+<span style = "color: red"><?php echo $error;?></span>
 			</div>
 			<div class="etc-login-form">
-				<p>Nieuwe gebruiker? <a href = "javascript: void(0)" onclick = "document.getElementById('register-box').style.display = 'inline'; document.getElementById('login-box').style.display = 'none';">Maak een nieuw account aan</a></p>
+				<p>Nieuwe gebruiker? <a href = "register.php">Maak een nieuw account aan</a></p>
 			</div>
 		</form>
 	</div>
 	<!-- end:Main Form -->
 </div>
-<br><br><br><br>
-<!-- REGISTRATION FORM -->
-<div class="text-center" style="padding:50px 0; margin-left: 100%; margin-right: 100%; display: none;" id = "register-box" >
-	<div class="logo">Registreren</div>
-	<!-- Main Form -->
-	<div class="login-form-1">
-		<form id="register-form" class="text-left" method = "post" action = "register.php">
-			<div class="login-form-main-message"></div>
-			<div class="main-login-form">
-				<div class="login-group">
-					<div class="form-group">
-						<label for="reg_username" class="sr-only">Gebruikersnaam</label>
-						<input type="text" class="form-control" id="reg_username" name="username" placeholder="Gebruikersnaam">
-					</div>
-					<div class="form-group">
-						<label for="reg_password" class="sr-only">Wachtwoord</label>
-						<input type="password" class="form-control" id="reg_password" name="password" placeholder="Wachtwoord" onchange = "checkpass(); return false;">
-					</div>
-					<div class="form-group">
-						<label for="reg_password_confirm" class="sr-only" >Bevestig wachtwoord</label>
-						<input type="password" class="form-control" id="reg_password_confirm" name="password_confirm" placeholder="Bevestiging wachtwoord" onchange = "checkpass(); return false;">
-					</div>
-					
-					<div class="form-group">
-						<label for="reg_email" class="sr-only">Email adres</label>
-						<input type="text" class="form-control" id="reg_email" name="email" placeholder="Email adres">
-					</div>
-					<div class="form-group">
-						<label for="reg_fullname" class="sr-only">Volledige naam</label>
-						<input type="text" class="form-control" id="reg_fullname" name="fullname" placeholder="Volledige naam">
-					</div>
 
-				</div>
-				<button type="submit" class="login-button"><i class="fa fa-chevron-right"></i></button>
-			</div>
-			<div class="etc-login-form">
-				<p id = "passerror" style = "color: red;"> </p>
-				<p>Heb je al een account? <a href = "javascript: void(0)" onclick = "document.getElementById('login-box').style.display = 'inline'; document.getElementById('register-box').style.display = 'none';">Log hier in</a></p>
-			</div>
-		</form>
-	</div>
-	<!-- end:Main Form -->
-</div>
-</div>
 <style>
 html,
 body {
@@ -517,16 +523,6 @@ label:hover:before {
   }
 	
 })(jQuery);
-</script>
-<script>
-function checkpass() {
-if (document.getElementById("reg_password_confirm").value != document.getElementById("reg_password").value) {
-document.getElementById("passerror").innerHTML = "De wachtwoorden zijn niet hetzelfde.";
-}
-else {
-document.getElementById("passerror").innerHTML = "";
-}
-}
 </script>
 </body>
 

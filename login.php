@@ -1,8 +1,14 @@
 <?php
 session_start();
 include("config.php");
-$username = $_POST['username'];
-$password = $_POST['password'];
+function sanitize($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+$username = sanitize($_POST['username']);
+$password = sanitize($_POST['password']);
 
 $stmt = $con->prepare('SELECT * FROM login WHERE USERNAME = ?');
 $stmt->bind_param("s", $username);

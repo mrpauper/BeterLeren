@@ -1,40 +1,38 @@
 <?php
+ini_set('display_errors', '1');
 include("session.php");
-$listname = $_POST['add'];
-$method = $_POST['method'];
+$listname = sanitize($_POST['add']);
+$method = sanitize($_POST['method']);
 include("config2.php");
 
 $listarray = json_decode($_POST["add"]);
 if ($listarray !== null) {
-$nederlands = array();
-$engels = array();
-$nederlands2 = array();
-$engels2 = array();
+$array = array();
+$array2 = array();
 $count = 1;
-
+$count2 = 0;
 
 foreach ($listarray as $list) {
 $sql = "SELECT WORDS FROM words WHERE NAME = '$list' AND USER = '".$_SESSION["login_user"]."'";
 $result = $con->query($sql);
 while($row = $result->fetch_assoc()) {
-    $array = unserialize($row["WORDS"]);
+    $array3 = unserialize($row["WORDS"]);
 }
 $betweenvar = "order" . $count . "";
 $count++;
 $order2 = $_POST[$betweenvar];
-foreach ($array as $key => $value) {
+foreach ($array3 as $key => $value) {
     if ($order2 == "RIGHT") {
-    $nederlands2[]['NEDERLANDS'] = $array[$key]['NEDERLANDS'];
-    $engels2[]['ENGELS'] = $array[$key]['ENGELS'];
+    $array2[$count2]['WORD1'] = $array3[$key]['NEDERLANDS'];
+    $array2[$count2]['WORD2'] = $array3[$key]['ENGELS'];
     } else {
-    $nederlands2[]['NEDERLANDS'] = $array[$key]['ENGELS'];
-    $engels2[]['ENGELS'] = $array[$key]['NEDERLANDS']; 
+    $array2[$count2]['WORD1'] = $array3[$key]['ENGELS'];
+    $array2[$count2]['WORD2'] = $array3[$key]['NEDERLANDS']; 
     }
+    $count2++;
 }
-$nederlands = array_merge_recursive($nederlands, $nederlands2);
-$engels = array_merge_recursive($engels, $engels2);
-$nederlands2 = array();
-$engels2 = array();
+$array = array_merge_recursive($array, $array2);
+$array2 = array();
 }
 $order = "RIGHT";
 }
@@ -42,28 +40,30 @@ $order = "RIGHT";
 
 
 else {
+$count2 = 0;
 $order = $_POST['order'];
-$nederlands = array();
-$engels = array();
+$array = array();
 $sql = "SELECT WORDS FROM words WHERE NAME = '$listname' AND USER = '".$_SESSION["login_user"]."'"; 
 $result = $con->query($sql); 
 while($row = $result->fetch_assoc()){
-$array = unserialize($row['WORDS']);
+  $array3 = unserialize($row['WORDS']);
 }
-foreach ($array as $key => $value) {
+foreach ($array3 as $key => $value) {
     if ($order == "RIGHT") {
-        $nederlands[]['NEDERLANDS'] = $array[$key]['NEDERLANDS'];
-        $engels[]['ENGELS'] = $array[$key]['ENGELS'];
+        $array[$count2]['WORD1'] = $array3[$key]['NEDERLANDS'];
+        $array[$count2]['WORD2'] = $array3[$key]['ENGELS'];
     } else {
-        $nederlands[]['NEDERLANDS'] = $array[$key]['ENGELS'];
-        $engels[]['ENGELS'] = $array[$key]['NEDERLANDS'];
+        $array[$count2]['WORD1'] = $array3[$key]['ENGELS'];
+        $array[$count2]['WORD2'] = $array3[$key]['NEDERLANDS']; 
     }
+    $count2++;
 }
 }
-$count = count($nederlands, COUNT_RECURSIVE) / 2;
-if (count($nederlands) == 0) {
+
+if (count($array) == 0) {
     echo "<script>alert('Er zijn geen woorden in deze woordenlijst(en)'); window.location.href = 'home.php'</script>";
 }
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -124,7 +124,6 @@ autocapitalize='none' autocomplete='off'>
     <li id = 'goed'></li>
     <li id = 'fout'></li>
   </ul>  
-<p>resterend: </p>
   <p id = 'resterend'></p>
 <h2 align = 'center' id = "cijfer"></h2>
 </div>
@@ -137,218 +136,164 @@ location.reload();
 }
 </script>
 <script>
+  var mistake = mistake2 = "";
 var mistakes = [];
-var nederlands = <?php echo json_encode( $nederlands) ?>;
-var engels = <?php echo json_encode( $engels) ?>;
-var clicks = 0; 
-var fouten = 0;
 var goeden = 0;
-var progression = 0;
-var order = "<?php echo $order; ?>";
-var method = "<?php echo $method; ?>";
-  
-//Normale methode
-  if (method == "TOETSEN") {
-      function start() {
-          var m = nederlands.length, t, i;
-                while (m) {
-                    i = Math.floor(Math.random() * m--);
-                    t = nederlands[m].NEDERLANDS;
-                    nederlands[m].NEDERLANDS = nederlands[i].NEDERLANDS;
-                    nederlands[i].NEDERLANDS = t;
-                     t = engels[m].ENGELS;
-                     engels[m].ENGELS = engels[i].ENGELS;
-                     engels[i].ENGELS = t;
-        }
-            document.getElementById("woord").innerHTML= nederlands[clicks].NEDERLANDS;
-            document.getElementById("input").focus();
-             clicks++;
+var fouten = 0;
+var array = <?php echo json_encode($array); ?>;
+var array_length_start = array.length; 
+var method = <?php echo json_encode($method);?>;
+var firstgood = [];
+
+if (method == "TOETSEN") {
+
+function start() {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+    while (0 !== currentIndex) {
+
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+  }
+  document.getElementById("woord").innerHTML = array[0].WORD1;
+  document.getElementById("input").focus();
+}
+
+function check(form){
+  if (array.length == 1) {
+    if (form.input.value.toUpperCase() == array[0].WORD2.toUpperCase()) {
+      if (mistakes.indexOf(array[0].WORD2) == -1) {
+        firstgood.push(array[0].WORD2);
       }
-      
-      
-  function check(form){
-  
-  var nederlands2 = 0
-for (x in nederlands) {
-    nederlands2++;
-}
-  var engels2 = 0
-for (x in engels) {
-    engels2++;
-}
-
-if (clicks > 0 && clicks < nederlands2) {
-    document.getElementById("woord").innerHTML= nederlands[clicks].NEDERLANDS;
-
-    if (form.input.value.toUpperCase() == engels[clicks - 1].ENGELS.toUpperCase()) {
-
-      document.getElementById("woord2").innerHTML= "goed";
+      array.splice(0, 1);
+      document.getElementById("woord2").innerHTML = "klaar";
+      document.getElementById("woord").innerHTML = "klaar";
       goeden++;
-    }
-
-    else {
-
-      document.getElementById("woord2").innerHTML= "fout,  " + engels[clicks - 1].ENGELS;
-      if (mistakes.indexOf(engels[clicks - 1].ENGELS) == -1) {
-            mistakes.push(engels[clicks - 1].ENGELS);
-            engels.push({ENGELS: engels[clicks - 1].ENGELS});
-            nederlands.push({NEDERLANDS: nederlands[clicks - 1].NEDERLANDS});
-            engels.splice(clicks + 2,0,{ENGELS: engels[clicks - 1].ENGELS});
-            nederlands.splice(clicks + 2,0,{NEDERLANDS: nederlands[clicks - 1].NEDERLANDS});
+    } else {
+      array.splice(0, 1);
+      document.getElementById("woord2").innerHTML = "fout, " + array[0].WORD2;
+      document.getElementById("woord").innerHTML = "klaar";
       fouten++;
-      } else {
-      engels.splice(clicks + 2,0,{ENGELS: engels[clicks - 1].ENGELS});
-      nederlands.splice(clicks + 2,0,{NEDERLANDS: nederlands[clicks - 1].NEDERLANDS});
-      fouten++;
-      }
     }
-
-    clicks++;
-    document.getElementById("form").reset();
-    document.getElementById("input").focus();
+    var note = firstgood.length / array_length_start * 9 + 1;
+    note = Math.round(note * 10) / 10
+    document.getElementById("cijfer").innerHTML = note;
+  } else {
+  if (form.input.value.toUpperCase() == array[0].WORD2.toUpperCase()) {
+    document.getElementById("woord2").innerHTML = "goed";
+    if (mistakes.indexOf(array[0].WORD2) == -1) {
+      firstgood.push(array[0].WORD2);
+    }
+    array.splice(0, 1);
+    document.getElementById("woord").innerHTML = array[0].WORD1;
+    goeden++;
+  } else {
+    document.getElementById("woord2").innerHTML = "fout, " + array[0].WORD2;
+    mistake2 = array[0].WORD2;
+    mistake1 = array[0].WORD1;
+    array.splice(0, 1);
+    array.splice(2, 0, {WORD1: mistake1, WORD2: mistake2});
+    if (mistakes.indexOf(mistake2) == -1) {
+      mistakes.push(mistake2);
+      array.push({WORD1: mistake1, WORD2: mistake2});
+    }
+    document.getElementById("woord").innerHTML = array[0].WORD1;
+    fouten++;
+  } 
   }
 
-  
-  
-else if (clicks == nederlands2) {
-
-if (form.input.value.toUpperCase() == engels[clicks - 1].ENGELS.toUpperCase()) {
-
-document.getElementById("woord2").innerHTML= "klaar";
-
-document.getElementById("woord").innerHTML= "klaar";
-goeden++;
+  document.getElementById("goed").innerHTML = "aantal goed: " + goeden;
+  document.getElementById("fout").innerHTML = "aantal fout: " + fouten;
+  document.getElementById("resterend").innerHTML = "resterend: " + array.length;
+  var betweenvar = array_length_start - array.length;
+  betweenvar = betweenvar / array_length_start * 100;
+  document.getElementById("progressbar").style.width = betweenvar + "%";
+  document.getElementById("form").reset();
+  document.getElementById("input").focus();
 }
 
-else {
+} else {
 
-document.getElementById("woord2").innerHTML= "fout,  " + engels[clicks - 1].ENGELS;
+  function start() {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+      while (0 !== currentIndex) {
 
-      document.getElementById("woord").innerHTML= "klaar";
-fouten++;
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
 
-}
-var goed = nederlands2 - fouten;
-var cijfer = goed / nederlands2 * 9 + 1;
-document.getElementById("cijfer").innerHTML= Math.round(cijfer * 100) / 100;
-clicks++;
-
-}
-
-
-else {
-}
-progression++;
-document.getElementById("goed").innerHTML = "aantal goed: " + goeden;
-document.getElementById("fout").innerHTML = "aantal fouten: " + fouten;
-document.getElementById("resterend").innerHTML = nederlands2 - clicks + 1;
-var betweenvar = progression / nederlands2 * 100;
-document.getElementById("progressbar").style.width = betweenvar + "%";
- 
-}
-} 
-
-//methode gedachten
-else {
-function start() {
-          var m = nederlands.length, t, i;
-                while (m) {
-                    i = Math.floor(Math.random() * m--);
-                    t = nederlands[m].NEDERLANDS;
-                    nederlands[m].NEDERLANDS = nederlands[i].NEDERLANDS;
-                    nederlands[i].NEDERLANDS = t;
-                     t = engels[m].ENGELS;
-                     engels[m].ENGELS = engels[i].ENGELS;
-                     engels[i].ENGELS = t;
-        }
-            document.getElementById("woord").innerHTML= nederlands[clicks].NEDERLANDS;
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
       }
-document.getElementById("toetsen").style.display = "none";
-document.getElementById("gedachten").style.display = "inline";
+    document.getElementById("woord").innerHTML = array[0].WORD1;
+    document.getElementById("gedachten").style.display = "inline";
+    document.getElementById("toetsen").style.display = "none";
+  }
 
-function show() {
-document.getElementById("woord22").innerHTML = engels[clicks].ENGELS;
-document.getElementById("goedfout").style.display = "inline";
-}
+  function show() {
+    document.getElementById("woord22").innerHTML = array[0].WORD2;
+    document.getElementById("goedfout").style.display = "inline";
+  }
 
-function goed() {
-  var nederlands2 = 0
-for (x in nederlands) {
-    nederlands2++;
-}
-  var engels2 = 0
-for (x in engels) {
-    engels2++;
-}
-clicks++;
-goeden++;
-if (clicks > 0 && clicks < nederlands2) {
-document.getElementById("goedfout").style.display = "none";
-document.getElementById("woord22").innerHTML = "";
-document.getElementById("woord").innerHTML = nederlands[clicks].NEDERLANDS;
-}
-else if (clicks == nederlands2) {
-document.getElementById("goedfout").style.display = "none";
-document.getElementById("woord22").innerHTML = "klaar";
-document.getElementById("woord").innerHTML = "klaar";
-}
-progression++;
-document.getElementById("goed").innerHTML = "aantal goed: " + goeden;
-document.getElementById("fout").innerHTML = "aantal fouten: " + fouten;
-document.getElementById("resterend").innerHTML = nederlands2 - clicks;
-var betweenvar = progression / nederlands2 * 100;
-document.getElementById("progressbar").style.width = betweenvar + "%";
-}
+  function goed() {
+    if (mistakes.indexOf(array[0].WORD2) == -1) {
+      firstgood.push(array[0].WORD2);
+    }
+    array.splice(0, 1);
+    goeden++;
+    if (array.length < 1) {
+      document.getElementById("goedfout").style.display = "none";
+      document.getElementById("woord").innerHTML = "klaar";
+      document.getElementById("woord22").innerHTML = "klaar";
+      var note = firsgood.length / array_length_start * 9 + 1;
+      note = Math.round(note * 10) / 10
+      document.getElementById("cijfer").innerHTML = note;
+    } else {
+      document.getElementById("goedfout").style.display = "none";
+      document.getElementById("woord22").innerHTML = "";
+      document.getElementById("woord").innerHTML = array[0].WORD1;
+    }
+    document.getElementById("goed").innerHTML = "aantal goed: " + goeden;
+    document.getElementById("fout").innerHTML = "aantal fout: " + fouten;
+    document.getElementById("resterend").innerHTML = "resterend: " + array.length;
+    var betweenvar = array_length_start - array.length;
+    betweenvar = betweenvar / array_length_start * 100;
+    document.getElementById("progressbar").style.width = betweenvar + "%";
+  }
 
-function fout() {
-  var nederlands2 = 0
-for (x in nederlands) {
-    nederlands2++;
+  function fout() {
+    mistake2 = array[0].WORD2;
+    mistake1 = array[0].WORD1;
+    array.splice(0, 1);
+    array.splice(2, 0, {WORD1: mistake1, WORD2: mistake2});
+    if (mistakes.indexOf(mistake2) == -1) {
+      mistakes.push(mistake2);
+      array.push({WORD1: mistake1, WORD2: mistake2});
+    }
+    fouten++;
+    if (array.length < 1) {
+      document.getElementById("goedfout").style.display = "none";
+      document.getElementById("woord").innerHTML = "klaar";
+      document.getElementById("woord22").innerHTML = "klaar";
+      var note = firstgood.length / array_length_start * 9 + 1;
+      note = Math.round(note * 10) / 10
+      document.getElementById("cijfer").innerHTML = note;
+    } else {
+      document.getElementById("goedfout").style.display = "none";
+      document.getElementById("woord22").innerHTML = "";
+      document.getElementById("woord").innerHTML = array[0].WORD1;
+    }
+    document.getElementById("goed").innerHTML = "aantal goed: " + goeden;
+    document.getElementById("fout").innerHTML = "aantal fout: " + fouten;
+    document.getElementById("resterend").innerHTML = "resterend: " + array.length;
+    var betweenvar = array_length_start - array.length;
+    betweenvar = betweenvar / array_length_start * 100;
+    document.getElementById("progressbar").style.width = betweenvar + "%";
+  }
 }
-  var engels2 = 0
-for (x in engels) {
-    engels2++;
-}
-clicks++;
-fouten++;
-
-if (clicks > 0 && clicks < nederlands2) {
-if (mistakes.indexOf(engels[clicks - 1].ENGELS) == -1) {
-            mistakes.push(engels[clicks - 1].ENGELS);
-            engels.push({ENGELS: engels[clicks - 1].ENGELS});
-            nederlands.push({NEDERLANDS: nederlands[clicks - 1].NEDERLANDS});
-            engels.splice(clicks + 2,0,{ENGELS: engels[clicks - 1].ENGELS});
-            nederlands.splice(clicks + 2,0,{NEDERLANDS: nederlands[clicks - 1].NEDERLANDS});
-      } else {
-      engels.splice(clicks + 2,0,{ENGELS: engels[clicks - 1].ENGELS});
-      nederlands.splice(clicks + 2,0,{NEDERLANDS: nederlands[clicks - 1].NEDERLANDS});
-      }
-}
-else if (clicks == nederlands2) {
-document.getElementById("woord22").innerHTML = "klaar";
-document.getElementById("woord").innerHTML = "klaar";
-}
-
-var nederlands2 = 0
-for (x in nederlands) {
-    nederlands2++;
-}
-var engels2 = 0
-for (x in engels) {
-    engels2++;
-}
-
-document.getElementById("goedfout").style.display = "none";
-document.getElementById("woord22").innerHTML = "";
-document.getElementById("woord").innerHTML = nederlands[clicks].NEDERLANDS;
-progression++;
-document.getElementById("goed").innerHTML = "aantal goed: " + goeden;
-document.getElementById("fout").innerHTML = "aantal fouten: " + fouten;
-document.getElementById("resterend").innerHTML = nederlands2 - clicks;
-var betweenvar = progression / nederlands2 * 100;
-document.getElementById("progressbar").style.width = betweenvar + "%";
-}
-}
-  </script>
+</script>
 </body>
 </html>

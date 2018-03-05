@@ -82,8 +82,7 @@ $con->close();
 <span style = "color: red"><?php echo $pass_error;?></span>
 					</div>
 					<div class="form-group login-group-checkbox">
-						<input type="checkbox" id="lg_remember" name="lg_remember">
-						<label for="lg_remember">Onthoudt mij</label>
+						<label for="lg_remember"><a href = "password.php">Wachtwoord vergeten?</a></label>
 					</div>
 				</div>
 				<button type="submit" class="login-button"><i class="fa fa-chevron-right"></i></button>

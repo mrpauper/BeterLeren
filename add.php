@@ -41,7 +41,6 @@ include("config2.php");
 $naam = $_POST['input'];
 $lang1 = $_POST['lang1'];
 $lang2 = $_POST['lang2'];
-
 $sql1 = "SELECT NAME FROM words WHERE NAME = '$naam' AND USER = '". $_SESSION["login_user"] ."'";
 $result1 = $con->query($sql1); 
 if ($result1->num_rows > 0) {

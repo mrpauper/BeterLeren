@@ -63,7 +63,6 @@ document.getElementById("form1").reset();
 document.getElementById("nederlands").focus();
 document.getElementById("table-body").innerHTML += "<tr><th>" + nederlands + "</th><th>" + engels + "</th></tr>";
 }
-
 function save () {
 var list_id = <?php echo json_encode($list_id) ?>;
 var array2 = JSON.stringify(array);
@@ -83,13 +82,11 @@ table {
     border-collapse: collapse;
     width: 100%;
 }
-
 td, th {
     border: 1px solid #dddddd;
     text-align: left;
     padding: 8px;
 }
-
 tr:nth-child(even) {
     background-color: #dddddd;
 }

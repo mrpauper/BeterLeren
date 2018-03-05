@@ -74,7 +74,6 @@ ul {
     background-color: #f1f1f1;
     display: block;
 }
-
 li {
     display: block;
     color: #000;
@@ -107,15 +106,12 @@ body {
 }
 </style>
 <script>
-
 function myFilter() {
-
     var input, filter, ul, li, a, i;
     input = document.getElementById('filter');
     filter = input.value.toUpperCase();
     ul = document.getElementById("myUl");
     li = ul.getElementsByTagName('li');
-
     for (i = 0; i < li.length; i++) {
         a = li[i].getElementsByTagName("span")[0];
         if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
@@ -129,7 +125,6 @@ function myLists() {
 var listarray = [];
 var ul = document.getElementById("myUl");
 var li = ul.getElementsByTagName('li');
-
 for (i = 0; i < li.length; i++) {
 var input = li[i].getElementsByTagName("input")[0];
 if (input.checked) {

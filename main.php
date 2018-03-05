@@ -1,11 +1,11 @@
 <?php
 ini_set('display_errors', '1');
 include("session.php");
-$listname = sanitize($_POST['add']);
-$method = sanitize($_POST['method']);
+$listname = sanitize($_GET['add']);
+$method = sanitize($_GET['method']);
 include("config2.php");
 
-$listarray = json_decode($_POST["add"]);
+$listarray = json_decode($_GET["add"]);
 if ($listarray !== null) {
 $array = array();
 $array2 = array();
@@ -20,7 +20,7 @@ while($row = $result->fetch_assoc()) {
 }
 $betweenvar = "order" . $count . "";
 $count++;
-$order2 = $_POST[$betweenvar];
+$order2 = $_GET[$betweenvar];
 foreach ($array3 as $key => $value) {
     if ($order2 == "RIGHT") {
     $array2[$count2]['WORD1'] = $array3[$key]['NEDERLANDS'];
@@ -41,7 +41,7 @@ $order = "RIGHT";
 
 else {
 $count2 = 0;
-$order = $_POST['order'];
+$order = $_GET['order'];
 $array = array();
 $sql = "SELECT WORDS FROM words WHERE NAME = '$listname' AND USER = '".$_SESSION["login_user"]."'"; 
 $result = $con->query($sql); 
@@ -75,7 +75,7 @@ if (count($array) == 0) {
 </head>
 <body onload = "start()">
 <div class = 'oefening'>
-  <h1 align = 'center'><?php $listarray = json_decode($_POST["add"]); if ($listarray !== null) { foreach($listarray as $value){echo $value; echo "  ";}} else { echo $listname; }?></h1>
+  <h1 align = 'center'><?php $listarray = json_decode($_GET["add"]); if ($listarray !== null) { foreach($listarray as $value){echo $value; echo "  ";}} else { echo $listname; }?></h1>
 
     <h2 align = 'center' id="woord"></h2>
 

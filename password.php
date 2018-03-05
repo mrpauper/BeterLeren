@@ -1,86 +1,50 @@
-<?php
+<?php 
+ini_set('display_errors', 1);
+$error = "";
+include("config.php");
 
-$username_error = $email_error = $password_error = $password_repeat_error = "";
-$username = $email = $password = $password_repeat = "";
-$user_created = false;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    include("config.php");
-    #Sanitize user input
-    $confirm_token = generateRandomString(128);
-    $passres_token = generateRandomString(128);    
-    $username = sanitize($_POST["username"]);
     $email = sanitize($_POST["email"]);
-    $password = sanitize($_POST["password"]);
-    $password_confirm = sanitize($_POST["password_confirm"]);
-    #Display errors
-    if ($username == "") {
-        $username_error = "Vul een gebruikersnaam in.";
+    $sql = "SELECT * FROM login WHERE EMAIL = '$email'";
+    $result = $con->query($sql);
+    while($row = $result->fetch_assoc()) {
+    $passres_token = $row["PASSRES_TOKEN"];
+    $username = $row["USERNAME"];
     }
-    if (iconv_strlen($username) <= 4 || iconv_strlen($username) >= 21) {
-        if ($username_error == "") {
-            $username_error = "Je gebruikersnaam moet minimaal 5 en maximaal 20 karakters lang zijn.";
-        }
+    if (mysqli_num_rows($result) > 0) {
+        sendConfirmEmail($username, $email, $passres_token);
+        echo "<script>alert('Er is een mail naar uw email-adres gestuurd.'); window.location.href = '/';</script>";
     }
-    if ($email == "") {
-        $email_error = "Vul een email adres in.";
+    else {
+        $error = "Er is geen account ingeschreven met dit email adres.";
     }
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        if ($email_error == "") {
-            $email_error = "Vul een valide email adres in. ";
-        }
-    }
-    if ($password == "") {
-        $password_error = "Vul een wachtwoord in.";
-    }
-    if (iconv_strlen($password) <= 4) {
-        if ($password_error == "") {
-            $password_error = "Je wachtwoord moet minimaal 5 karakters lang zijn.";
-        }
-    }
-    if ($password_confirm != $password) {
-        $password_repeat_error = "Is niet gelijk aan je wachtwoord.";
-    }
-    $query = "SELECT * FROM `login` WHERE `USERNAME` = '{$username}' OR `EMAIL` = '{$email}' OR `CONFIRM_TOKEN` = '{$confirm_token}' OR `PASSRES_TOKEN` = '{$passres_token}'";
-    $result = $con->query($query);
-    if ($result) {
-        $row = $result->fetch_assoc();
-        if ($row["USERNAME"] == $username && $username_error == "") {
-            $username_error = "Gebruikersnaam bestaat al.";
-        }
-        if ($row["EMAIL"] == $email && $email_error == "") {
-            $email_error = 'Email is al in gebruik. <a href="/">log in</a>.';
-        }
-        if ($row["CONFIRM_TOKEN"] == $confirm_token) {
-            $confirm_token = generateRandomString(128);
-        }
-        if ($row["PASSRES_TOKEN"] == $passres_token) {
-            $passres_token = generateRandomString(128);
-        }
-    }
-    #Create new user
-    if ($username_error == "" && $email_error == "" && $password_error == "" && $password_repeat_error == "") {
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT, ["cost"=>11]);
-        $query = "INSERT INTO `login` (`USERNAME`, `EMAIL`, `PASSWORD`, `CONFIRMED`, `CONFIRM_TOKEN`, `PASSRES_TOKEN`) VALUES ('{$username}', '{$email}', '{$hashed_password}', 0, '{$confirm_token}', '{$passres_token}');";
-
-        $email_sent = sendConfirmEmail($username, $email, $confirm_token);
-        if ($con->query($query) && $email_sent) {
-            $user_created = true;
-            echo "<script>
-alert('Je account is aangemaakt en de bevestigingsemail is verzonden.');
-window.location.href = '/';
-</script>";
-        }
-    }
-    $con->close();
 }
+
 function sanitize($data) {
     $data = trim($data);
     $data = stripslashes($data);
     $data = htmlspecialchars($data);
     return $data;
 }
-?>
 
+function sendConfirmEmail($username, $email, $token) {
+    $from_email = "daanschrijver1@gmail.com";
+    $domain = "wrts-2.000webhostapp.com";
+    $to = $email;
+    $subject = "Wachtwoord opvragen";
+    $headers = "From: " . $from_email . "\r\n";
+    $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "X-Mailer: PHP/" . phpversion();
+    $message = file_get_contents('email_templates/password.html');
+    $message = str_replace("#domain#", $domain, $message);
+    $message = str_replace("#token#", $token, $message);
+    $message = str_replace("#username#", $username, $message);
+    $result = mail($email, $subject, $message, $headers);
+    echo $result;
+    return $result;
+}
+?>
 
 
 <html>
@@ -89,62 +53,37 @@ function sanitize($data) {
     <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.13.1/jquery.validate.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <title>WRTS-2 | registreren</title>
+    <title>Wachtwoord vergeten</title>
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="login wrts-2" />
 
 </head>
-
 <body>
-
-<div style = "display: -webkit-box;
+            <div style = "display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
   display: -webkit-flex;
   display: flex; justify-content: center; flex-wrap: wrap;">
-        <div class="text-center" id = "login-box">
+        <div class="text-center" style="padding:50px 0" id = "login-box">
 	<div class="logo"><img src = "images/beterleren.png" style = "display: block; margin-left: auto; margin-right: auto"/></div>
-<div class="text-center" id = "register-box" >
 	<!-- Main Form -->
-	<div class="login-form-1">
-		<form id="register-form" class="text-left" method = "post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+	<div class="login-form-1" >
+		<form id="login-form" class="text-left" method = "post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
 			<div class="login-form-main-message"></div>
 			<div class="main-login-form">
 				<div class="login-group">
 					<div class="form-group">
-						<label for="reg_username" class="sr-only">Gebruikersnaam</label>
-						<input type="text" class="form-control" id="reg_username" name="username" placeholder="Gebruikersnaam"><br>
-                        <span style = "color: red"><?php echo $username_error;?></span>
+						<label for="lg_username" class="sr-only">Email adres</label>
+						<input type="text" class="form-control" id="username" name="email" placeholder="Email adres"><br>
 					</div>
-					<div class="form-group">
-						<label for="reg_password" class="sr-only">Wachtwoord</label>
-						<input type="password" class="form-control" id="reg_password" name="password" placeholder="Wachtwoord" onchange = "checkpass(); return false;"><br>
-<span style = "color: red"><?php echo $password_error;?></span>
-					</div>
-					<div class="form-group">
-						<label for="reg_password_confirm" class="sr-only" >Bevestig wachtwoord</label>
-						<input type="password" class="form-control" id="reg_password_confirm" name="password_confirm" placeholder="Bevestiging wachtwoord"><br>
-<span style = "color: red"><?php echo $password_repeat_error;?></span>
-					</div>
-					
-					<div class="form-group">
-						<label for="reg_email" class="sr-only">Email adres</label>
-						<input type="text" class="form-control" id="reg_email" name="email" placeholder="Email adres"><br>
-<span style = "color: red"><?php echo $email_error;?></span>
-					</div>
-
 				</div>
 				<button type="submit" class="login-button"><i class="fa fa-chevron-right"></i></button>
-			</div>
-			<div class="etc-login-form">
-				<p>Heb je al een account? <a href = "/">Log hier in</a></p>
+<span style = "color: red"><?php echo $error;?></span>
 			</div>
 		</form>
 	</div>
 	<!-- end:Main Form -->
 </div>
-</div>
-
 
 <style>
 html,
@@ -152,7 +91,6 @@ body {
   background: #efefef;
   padding: 10px;
   font-family: 'Varela Round';
-  overflow-y: hidden;
 }
 /*=== 2. Anchor Link ===*/
 a {
@@ -414,6 +352,7 @@ label:hover:before {
   color: #aaaaaa;
   font-weight: bold;
 }
+
 </style>
 <script>
     (function($) {
@@ -573,33 +512,6 @@ label:hover:before {
 	
 })(jQuery);
 </script>
-<?php 
-function sendConfirmEmail($username, $email, $confirm_token) {
-    $from_email = "daanschrijver1@gmail.com";
-    $domain = "wrts-2.000webhostapp.com";
-    $to = $email;
-    $subject = "Bevestig je email adres";
-    $headers = "From: " . $from_email . "\r\n";
-    $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
-    $headers .= "MIME-Version: 1.0\r\n";
-    $headers .= "X-Mailer: PHP/" . phpversion();
-    $message = file_get_contents('email_templates/confirm.html');
-    $message = str_replace("#domain#", $domain, $message);
-    $message = str_replace("#token#", $confirm_token, $message);
-    $message = str_replace("#username#", $username, $message);
-    $result = mail($email, $subject, $message, $headers);
-    echo $result;
-    return $result;
-}
-function generateRandomString($length) {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $charactersLength = strlen($characters);
-    $randomString = '';
-    for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[rand(0, $charactersLength - 1)];
-    }
-    return $randomString;
-}
-?>
 </body>
+
 </html>
